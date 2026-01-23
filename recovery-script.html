@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusEats Data Recovery</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: #f5f5f5; 
+        }
+        .container { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        }
+        button { 
+            background: #007bff; 
+            color: white; 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            margin: 10px 5px; 
+            font-size: 16px;
+        }
+        button:hover { background: #0056b3; }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+        .warning { color: orange; font-weight: bold; }
+        .info { background: #e3f2fd; padding: 15px; border-radius: 5px; margin: 15px 0; }
+        .data-section { 
+            background: #f8f9fa; 
+            padding: 15px; 
+            border-radius: 5px; 
+            margin: 10px 0; 
+            border-left: 4px solid #007bff;
+        }
+        pre { background: #f1f1f1; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛠️ CampusEats Data Recovery & Cleanup</h1>
+        
+        <div class="info">
+            <strong>💡 What This Does:</strong><br>
+            This script will help recover your lost menu items, transactions, and receipts. It will also clean up any corrupted data and restore the system to a working state.
+        </div>
+
+        <h2>📊 Current Data Status</h2>
+        <div id="dataStatus"></div>
+
+        <h2>🔧 Recovery Actions</h2>
+        <div>
+            <button onclick="clearAllData()">🗑️ Clear All Data (Fresh Start)</button>
+            <button onclick="restoreMenuData()">🍽️ Restore Original Menu</button>
+            <button onclick="fixCartIssues()">🛒 Fix Cart Issues</button>
+            <button onclick="restoreTransactionData()">💳 Restore Transaction Data</button>
+        </div>
+
+        <h2>📱 Quick Setup</h2>
+        <div>
+            <button onclick="setupCompleteSystem()">⚡ Complete Setup (Recommended)</button>
+            <button onclick="createTestData()">🧪 Create Test Data</button>
+        </div>
+
+        <h2>📋 Current Data Backup</h2>
+        <div>
+            <button onclick="showAllData()">👀 Show All Stored Data</button>
+            <button onclick="downloadDataBackup()">💾 Download Backup</button>
+        </div>
+
+        <div id="output"></div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const output = document.getElementById('output');
+            const color = type === 'success' ? 'green' : type === 'error' ? 'red' : type === 'warning' ? 'orange' : 'black';
+            output.innerHTML += `<div style="color: ${color}; margin: 5px 0;">[${new Date().toLocaleTimeString()}] ${message}</div>`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function showDataStatus() {
+            const statusDiv = document.getElementById('dataStatus');
+            let status = '';
+            
+            // Check localStorage items
+            const keys = Object.keys(localStorage);
+            const campusEatsKeys = keys.filter(key => key.startsWith('campusEats_'));
+            
+            status += `<div class="data-section">`;
+            status += `<strong>📦 Total localStorage items:</strong> ${keys.length}<br>`;
+            status += `<strong>🍴 CampusEats items:</strong> ${campusEatsKeys.length}<br><br>`;
+            
+            campusEatsKeys.forEach(key => {
+                const data = localStorage.getItem(key);
+                const size = new Blob([data]).size;
+                status += `<strong>${key}:</strong> ${size} bytes<br>`;
+            });
+            status += '</div>';
+            
+            statusDiv.innerHTML = status;
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ This will delete ALL data including menu, cart, orders, and receipts. Continue?')) {
+                const keys = Object.keys(localStorage);
+                const campusEatsKeys = keys.filter(key => key.startsWith('campusEats_') || key.includes('mock'));
+                
+                campusEatsKeys.forEach(key => localStorage.removeItem(key));
+                
+                log(`✅ Cleared ${campusEatsKeys.length} data items`, 'success');
+                log('🔄 Please refresh the page to see changes', 'warning');
+                showDataStatus();
+            }
+        }
+
+        function restoreMenuData() {
+            // Create comprehensive menu data for all 3 canteens
+            const menuData = {
+                1: [ // Main Canteen
+                    { item_id: 1, name: 'KL Biryani', description: 'Authentic Kerala style biryani with aromatic spices', price: 120, category: 'Biryani', is_veg: false, is_available: true, available_quantity: 30, image_url: 'https://images.unsplash.com/photo-1563379091339-03246963d96c?w=300&h=200&fit=crop' },
+                    { item_id: 2, name: 'TN Biryani', description: 'Traditional Tamil Nadu style biryani', price: 110, category: 'Biryani', is_veg: false, is_available: true, available_quantity: 25, image_url: 'https://images.unsplash.com/photo-1563379091339-03246963d96c?w=300&h=200&fit=crop' },
+                    { item_id: 3, name: 'Chicken Biryani', description: 'Classic chicken biryani with basmati rice', price: 130, category: 'Biryani', is_veg: false, is_available: true, available_quantity: 40, image_url: 'https://images.unsplash.com/photo-1563379091339-03246963d96c?w=300&h=200&fit=crop' },
+                    { item_id: 4, name: 'Mutton Biryani', description: 'Premium mutton biryani with tender meat', price: 180, category: 'Biryani', is_veg: false, is_available: true, available_quantity: 20, image_url: 'https://images.unsplash.com/photo-1563379091339-03246963d96c?w=300&h=200&fit=crop' },
+                    { item_id: 5, name: 'Veg Biryani', description: 'Mixed vegetable biryani with aromatic rice', price: 80, category: 'Biryani', is_veg: true, is_available: true, available_quantity: 45, image_url: 'https://images.unsplash.com/photo-1563379091339-03246963d96c?w=300&h=200&fit=crop' },
+                    { item_id: 6, name: 'Chicken 65', description: 'Spicy fried chicken starter', price: 120, category: 'Starters', is_veg: false, is_available: true, available_quantity: 25, image_url: 'https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=300&h=200&fit=crop' },
+                    { item_id: 7, name: 'Idli Sambar', description: 'Steamed idli with sambar and chutney', price: 40, category: 'South Indian', is_veg: true, is_available: true, available_quantity: 80, image_url: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=300&h=200&fit=crop' },
+                    { item_id: 8, name: 'Masala Dosa', description: 'Crispy dosa with spiced potato filling', price: 65, category: 'South Indian', is_veg: true, is_available: true, available_quantity: 50, image_url: 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=300&h=200&fit=crop' },
+                    { item_id: 9, name: 'Paneer Butter Masala', description: 'Creamy paneer curry with rotis', price: 130, category: 'North Indian', is_veg: true, is_available: true, available_quantity: 35, image_url: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=300&h=200&fit=crop' },
+                    { item_id: 10, name: 'Chole Bhature', description: 'Spicy chickpea curry with fried bread', price: 90, category: 'North Indian', is_veg: true, is_available: true, available_quantity: 30, image_url: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=300&h=200&fit=crop' }
+                ],
+                2: [ // IT Canteen
+                    { item_id: 31, name: 'KL Biryani', description: 'Kerala style aromatic biryani', price: 115, category: 'Biryani', is_veg: false, is_available: true, available_quantity: 25, image_url: 'https://images.unsplash.com/photo-1563379091339-03246963d96c?w=300&h=200&fit=crop' },
+                    { item_id: 32, name: 'Chicken Biryani', description: 'Traditional chicken biryani', price: 125, category: 'Biryani', is_veg: false, is_available: true, available_quantity: 35, image_url: 'https://images.unsplash.com/photo-1563379091339-03246963d96c?w=300&h=200&fit=crop' },
+                    { item_id: 33, name: 'Egg Biryani', description: 'Egg biryani with spices', price: 85, category: 'Biryani', is_veg: false, is_available: true, available_quantity: 30, image_url: 'https://images.unsplash.com/photo-1563379091339-03246963d96c?w=300&h=200&fit=crop' },
+                    { item_id: 34, name: 'Veg Biryani', description: 'Mixed vegetable biryani', price: 75, category: 'Biryani', is_veg: true, is_available: true, available_quantity: 40, image_url: 'https://images.unsplash.com/photo-1563379091339-03246963d96c?w=300&h=200&fit=crop' },
+                    { item_id: 35, name: 'Samosa', description: 'Crispy fried samosa', price: 12, category: 'Snacks', is_veg: true, is_available: true, available_quantity: 100, image_url: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=300&h=200&fit=crop' },
+                    { item_id: 36, name: 'Pav Bhaji', description: 'Spicy vegetable curry with bread', price: 70, category: 'Snacks', is_veg: true, is_available: true, available_quantity: 40, image_url: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=300&h=200&fit=crop' },
+                    { item_id: 37, name: 'Vada Pav', description: 'Mumbai style vada pav', price: 25, category: 'Snacks', is_veg: true, is_available: true, available_quantity: 50, image_url: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=300&h=200&fit=crop' }
+                ],
+                3: [ // MBA Canteen
+                    { item_id: 60, name: 'Veg Biryani', description: 'Premium vegetable biryani', price: 90, category: 'Rice & Biryani', is_veg: true, is_available: true, available_quantity: 50, image_url: 'https://images.unsplash.com/photo-1563379091339-03246963d96c?w=300&h=200&fit=crop' },
+                    { item_id: 61, name: 'Paneer Biryani', description: 'Aromatic paneer biryani', price: 120, category: 'Rice & Biryani', is_veg: true, is_available: true, available_quantity: 35, image_url: 'https://images.unsplash.com/photo-1563379091339-03246963d96c?w=300&h=200&fit=crop' },
+                    { item_id: 62, name: 'Idli', description: 'Soft steamed idli with sambar and chutney', price: 45, category: 'South Indian Specials', is_veg: true, is_available: true, available_quantity: 80, image_url: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=300&h=200&fit=crop' },
+                    { item_id: 63, name: 'Masala Dosa', description: 'Dosa with spiced potato filling', price: 70, category: 'South Indian Specials', is_veg: true, is_available: true, available_quantity: 50, image_url: 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=300&h=200&fit=crop' },
+                    { item_id: 64, name: 'Paneer Butter Masala', description: 'Creamy paneer curry', price: 140, category: 'North Indian & Curries', is_veg: true, is_available: true, available_quantity: 40, image_url: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=300&h=200&fit=crop' },
+                    { item_id: 65, name: 'Pani Puri', description: 'Crispy puris with flavored water', price: 35, category: 'Snacks & Street Food', is_veg: true, is_available: true, available_quantity: 80, image_url: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=300&h=200&fit=crop' }
+                ]
+            };
+
+            // Save menu data for admin
+            localStorage.setItem('mockMenuItems', JSON.stringify(Object.values(menuData).flat()));
+            
+            // Save individual canteen data for student view
+            Object.keys(menuData).forEach(canteenId => {
+                localStorage.setItem(`canteen_${canteenId}_menu`, JSON.stringify(menuData[canteenId]));
+            });
+
+            log('✅ Menu data restored for all 3 canteens', 'success');
+            log('📊 Main Canteen: 10 items | IT Canteen: 7 items | MBA Canteen: 6 items', 'info');
+        }
+
+        function fixCartIssues() {
+            // Clear any corrupted cart data
+            const cartKeys = ['campusEats_cart', 'campusEats_cart_backup'];
+            cartKeys.forEach(key => localStorage.removeItem(key));
+            
+            log('✅ Cart issues fixed - cleared corrupted cart data', 'success');
+        }
+
+        function restoreTransactionData() {
+            // Create sample transaction data
+            const sampleReceipts = [
+                {
+                    receipt_id: 'RCP1730609847123',
+                    order: {
+                        order_id: 'ORD1730609847123',
+                        total_amount: 250,
+                        subtotal: 238,
+                        tax_amount: 12,
+                        items: [
+                            { name: 'KL Biryani', quantity: 1, price: 120, item_total: 120 },
+                            { name: 'Chicken 65', quantity: 1, price: 120, item_total: 120 }
+                        ],
+                        pickup_time: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+                        canteen: { name: 'Main Canteen', location: 'Main Building, Ground Floor' }
+                    },
+                    payment: { amount: 250, merchant_upi: 'campuseats@paytm' },
+                    user: { 
+                        name: 'Test Student', 
+                        student_id: 'STU2024', 
+                        email: 'test@university.edu', 
+                        phone: '+91 9876543210',
+                        course: 'Computer Science',
+                        year: 'Third Year'
+                    },
+                    payment_status: 'completed',
+                    payment_timestamp: new Date().toISOString(),
+                    transaction_id: 'TXN1730609847123'
+                }
+            ];
+            
+            localStorage.setItem('campusEats_receipts', JSON.stringify(sampleReceipts));
+            
+            log('✅ Sample transaction data created', 'success');
+        }
+
+        function setupCompleteSystem() {
+            log('🔄 Setting up complete system...', 'info');
+            
+            // Clear old data
+            clearAllData();
+            
+            setTimeout(() => {
+                // Restore menu data
+                restoreMenuData();
+                
+                // Fix cart issues
+                fixCartIssues();
+                
+                // Create admin orders
+                const sampleOrders = [
+                    {
+                        order_id: 'ORD1730609900123',
+                        user_id: 1,
+                        student_name: 'Rajesh Kumar',
+                        student_id: 'STU2021',
+                        phone: '+91 9876543210',
+                        email: 'rajesh.kumar@university.edu',
+                        items: [
+                            { item_id: 1, name: 'KL Biryani', quantity: 1, price: 120, total: 120 },
+                            { item_id: 6, name: 'Chicken 65', quantity: 1, price: 120, total: 120 }
+                        ],
+                        total_amount: 252,
+                        status: 'pending',
+                        payment_status: 'paid',
+                        pickup_time: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+                        special_instructions: 'Extra spicy please',
+                        created_at: new Date().toISOString()
+                    }
+                ];
+                
+                localStorage.setItem('campusEats_admin_orders', JSON.stringify(sampleOrders));
+                
+                log('✅ Complete system setup finished!', 'success');
+                log('🍽️ Menu items: ✅ | 🛒 Cart system: ✅ | 📦 Orders: ✅', 'success');
+                log('🔄 Please refresh your browser to see changes', 'warning');
+            }, 1000);
+        }
+
+        function createTestData() {
+            // Create test user
+            const testUser = {
+                user_id: 1,
+                email: 'test@university.edu',
+                name: 'Test Student',
+                student_id: 'STU2024',
+                phone: '+91 9876543210',
+                course: 'Computer Science',
+                year: 'Third Year',
+                created_at: new Date().toISOString()
+            };
+            
+            localStorage.setItem('campusEats_user', JSON.stringify(testUser));
+            localStorage.setItem('campusEats_token', 'offline_token_' + Date.now());
+            localStorage.setItem('campusEats_isOfflineAuth', 'true');
+            
+            log('✅ Test user created - Email: test@university.edu | Password: any', 'success');
+        }
+
+        function showAllData() {
+            const output = document.getElementById('output');
+            output.innerHTML = '<h3>📦 Current Data Storage:</h3>';
+            
+            const keys = Object.keys(localStorage).filter(key => 
+                key.startsWith('campusEats_') || key.includes('mock') || key.includes('canteen_')
+            );
+            
+            keys.forEach(key => {
+                const data = localStorage.getItem(key);
+                try {
+                    const parsed = JSON.parse(data);
+                    output.innerHTML += `<div class="data-section">
+                        <strong>${key}:</strong><br>
+                        <pre>${JSON.stringify(parsed, null, 2)}</pre>
+                    </div>`;
+                } catch {
+                    output.innerHTML += `<div class="data-section">
+                        <strong>${key}:</strong> ${data}
+                    </div>`;
+                }
+            });
+        }
+
+        function downloadDataBackup() {
+            const data = {};
+            const keys = Object.keys(localStorage).filter(key => 
+                key.startsWith('campusEats_') || key.includes('mock') || key.includes('canteen_')
+            );
+            
+            keys.forEach(key => {
+                data[key] = localStorage.getItem(key);
+            });
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `campuseats-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            
+            log('💾 Data backup downloaded', 'success');
+        }
+
+        // Initialize on page load
+        window.onload = function() {
+            showDataStatus();
+            log('🔧 Recovery tool loaded. Click buttons above to fix issues.', 'info');
+        };
+    </script>
+</body>
+</html>

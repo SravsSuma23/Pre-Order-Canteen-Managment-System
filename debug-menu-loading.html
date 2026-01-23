@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Menu Loading</title>
+</head>
+<body>
+    <h1>Debug Menu Loading - Force Update to 50 Items</h1>
+    <div id="output"></div>
+    <button onclick="clearAndReload()">Clear All Data & Force 50 Items</button>
+    <button onclick="checkCurrentData()">Check Current Data</button>
+    
+    <script>
+        const output = document.getElementById('output');
+        
+        function log(message) {
+            output.innerHTML += '<p>' + message + '</p>';
+            console.log(message);
+        }
+        
+        function clearAndReload() {
+            log('🔄 Clearing all localStorage data...');
+            
+            // Clear all possible localStorage keys
+            const keysToRemove = [
+                'mockMenuItems',
+                'canteen_1_menu', 'canteen_2_menu', 'canteen_3_menu',
+                'canteen_1_admin_menu', 'canteen_2_admin_menu', 'canteen_3_admin_menu',
+                'canteen_general_admin_menu',
+                'campusEats_menu_cache',
+                'menu_cache_timestamp'
+            ];
+            
+            keysToRemove.forEach(key => {
+                if (localStorage.getItem(key)) {
+                    localStorage.removeItem(key);
+                    log(`🗑️ Removed ${key}`);
+                }
+            });
+            
+            // Clear session storage
+            sessionStorage.clear();
+            log('🗑️ Cleared session storage');
+            
+            // Force load the 50-item menu data
+            log('📥 Loading 50-item menu data for each canteen...');
+            
+            // Main Canteen - 50 items (25 veg + 25 non-veg)
+            const mainCanteenItems = generateMenuItems(1, 50, 25, 25);
+            localStorage.setItem('canteen_1_menu', JSON.stringify(mainCanteenItems));
+            localStorage.setItem('canteen_1_admin_menu', JSON.stringify(mainCanteenItems));
+            log('✅ Main Canteen: 50 items loaded');
+            
+            // IT Canteen - 50 items (25 veg + 25 non-veg)  
+            const itCanteenItems = generateMenuItems(2, 50, 25, 25);
+            localStorage.setItem('canteen_2_menu', JSON.stringify(itCanteenItems));
+            localStorage.setItem('canteen_2_admin_menu', JSON.stringify(itCanteenItems));
+            log('✅ IT Canteen: 50 items loaded');
+            
+            // MBA Canteen - 50 items (50 veg + 0 non-veg)
+            const mbaCanteenItems = generateMenuItems(3, 50, 50, 0);
+            localStorage.setItem('canteen_3_menu', JSON.stringify(mbaCanteenItems));
+            localStorage.setItem('canteen_3_admin_menu', JSON.stringify(mbaCanteenItems));
+            log('✅ MBA Canteen: 50 items loaded');
+            
+            log('🎉 All canteens now have 50 items each!');
+            log('🔄 Please refresh your application now.');
+        }
+        
+        function generateMenuItems(canteenId, totalItems, vegItems, nonVegItems) {
+            const items = [];
+            let itemId = (canteenId - 1) * 100 + 1;
+            
+            // Generate vegetarian items
+            for (let i = 0; i < vegItems; i++) {
+                items.push({
+                    item_id: itemId++,
+                    name: `Veg Item ${i + 1} - Canteen ${canteenId}`,
+                    description: `Delicious vegetarian dish ${i + 1}`,
+                    price: 50 + (i * 5),
+                    category: i % 2 === 0 ? 'Rice & Biryani' : 'Snacks',
+                    is_veg: true,
+                    vegetarian: true,
+                    is_available: true,
+                    available_quantity: 30,
+                    rating: 4.0 + (Math.random() * 1),
+                    total_ratings: Math.floor(Math.random() * 200) + 50,
+                    image_url: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=300&h=200&fit=crop',
+                    canteen_id: canteenId,
+                    created_at: new Date().toISOString()
+                });
+            }
+            
+            // Generate non-vegetarian items
+            for (let i = 0; i < nonVegItems; i++) {
+                items.push({
+                    item_id: itemId++,
+                    name: `Non-Veg Item ${i + 1} - Canteen ${canteenId}`,
+                    description: `Delicious non-vegetarian dish ${i + 1}`,
+                    price: 80 + (i * 5),
+                    category: i % 2 === 0 ? 'Rice & Biryani' : 'Snacks',
+                    is_veg: false,
+                    vegetarian: false,
+                    is_available: true,
+                    available_quantity: 25,
+                    rating: 4.0 + (Math.random() * 1),
+                    total_ratings: Math.floor(Math.random() * 200) + 50,
+                    image_url: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=300&h=200&fit=crop',
+                    canteen_id: canteenId,
+                    created_at: new Date().toISOString()
+                });
+            }
+            
+            return items;
+        }
+        
+        function checkCurrentData() {
+            output.innerHTML = '';
+            log('🔍 Checking current localStorage data...');
+            
+            for (let canteenId = 1; canteenId <= 3; canteenId++) {
+                const adminKey = `canteen_${canteenId}_admin_menu`;
+                const studentKey = `canteen_${canteenId}_menu`;
+                
+                const adminData = localStorage.getItem(adminKey);
+                const studentData = localStorage.getItem(studentKey);
+                
+                const canteenNames = ['', 'Main Canteen', 'IT Canteen', 'MBA Canteen'];
+                
+                log(`📊 ${canteenNames[canteenId]}:`);
+                
+                if (adminData) {
+                    const adminItems = JSON.parse(adminData);
+                    log(`   Admin: ${adminItems.length} items`);
+                } else {
+                    log('   Admin: No data');
+                }
+                
+                if (studentData) {
+                    const studentItems = JSON.parse(studentData);
+                    log(`   Student: ${studentItems.length} items`);
+                } else {
+                    log('   Student: No data');
+                }
+                
+                log('');
+            }
+        }
+        
+        // Check on load
+        checkCurrentData();
+    </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Backend Connectivity Test</title>
+</head>
+<body>
+    <h1>Backend Connection Test</h1>
+    <button onclick="testConnection()">Test Connection</button>
+    <button onclick="testRegistration()">Test Registration</button>
+    <div id="result"></div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+        
+        function log(message) {
+            document.getElementById('result').innerHTML += '<p>' + message + '</p>';
+        }
+
+        async function testConnection() {
+            log('Testing basic connection to backend...');
+            try {
+                const response = await fetch('http://localhost:5000/health');
+                const data = await response.json();
+                log('✅ Backend is reachable: ' + JSON.stringify(data));
+            } catch (error) {
+                log('❌ Cannot reach backend: ' + error.message);
+            }
+        }
+
+        async function testRegistration() {
+            log('Testing registration endpoint...');
+            try {
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: 'Frontend Test User',
+                        email: 'frontend@test.com',
+                        phone: '9876543210',
+                        password: 'password123'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log('✅ Registration successful: ' + JSON.stringify(data));
+                } else {
+                    log('⚠️ Registration failed with error: ' + JSON.stringify(data));
+                }
+            } catch (error) {
+                log('❌ Registration request failed: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
