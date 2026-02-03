@@ -75,11 +75,6 @@ A comprehensive web application for managing canteen operations with pre-orderin
    docker-compose up -d
    ```
 
-4. **Access the application**
-   - **Frontend**: http://localhost:3000
-   - **Backend API**: http://localhost:5000
-   - **phpMyAdmin**: http://localhost:8080 (development profile)
-
 ### Option 2: Manual Setup
 
 1. **Database Setup**
